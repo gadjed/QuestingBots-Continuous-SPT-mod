@@ -42,6 +42,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\BotSearchDistanceConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\BotSpawnsConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\BotSpawnTypeConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Configuration\ContinuousPopulationConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Configuration\ScavReinforcementsConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\BotTypeConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\BotTypeValueConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\BrainLayerPrioritiesConfig.cs" />

@@ -11,6 +11,7 @@ namespace QuestingBots.Services
     public class AutoDisableSpawningSystemService : AbstractService
     {
         private readonly string[] SPAWNING_MOD_GUIDS = ["li.barlog.unda", "com.acidphantasm.botplacementsystem"];
+        private const string SCAV_POPULATION_GUID = "gadjed.scavpopulation";
 
         private LoggingUtil _logger;
         private ConfigUtil _config;
@@ -31,6 +32,7 @@ namespace QuestingBots.Services
             }
 
             DisableSpawningSystemIfAnotherSpawningModIsLoaded();
+            WarnIfScavPopulationIsLoaded();
         }
 
         private void DisableSpawningSystemIfAnotherSpawningModIsLoaded()
@@ -47,6 +49,18 @@ namespace QuestingBots.Services
                     _logger.Warning($"{mod.ModMetadata.Name} detected. Disabling the Questing Bots spawning system.");
 
                     _config.CurrentConfig.BotSpawns.Enabled = false;
+                    return;
+                }
+            }
+        }
+
+        private void WarnIfScavPopulationIsLoaded()
+        {
+            foreach (SptMod mod in _loadedMods)
+            {
+                if (mod.ModMetadata.ModGuid == SCAV_POPULATION_GUID)
+                {
+                    _logger.Warning("Scav Population detected. Questing Bots now includes continuous population (PMC top-up + scav reinforcements). Uninstall Scav Population to avoid stacking spawns.");
                     return;
                 }
             }

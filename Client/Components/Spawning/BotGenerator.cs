@@ -34,7 +34,10 @@ namespace QuestingBots.Components.Spawning
         protected readonly List<Models.BotSpawnInfo> BotGroups = new List<Models.BotSpawnInfo>();
         private readonly Stopwatch retrySpawnTimer = Stopwatch.StartNew();
         private readonly Stopwatch updateTimer = Stopwatch.StartNew();
+        private readonly Stopwatch continuousTopUpTimer = Stopwatch.StartNew();
         private readonly System.Random random = new System.Random();
+        private int initialBotGroupCount = 0;
+        private bool isGeneratingContinuousGroup = false;
 
         public static int RemainingBotGenerators { get; private set; } = 0;
         public static int CurrentBotGeneratorProgress { get; private set; } = 0;
@@ -48,9 +51,15 @@ namespace QuestingBots.Components.Spawning
         public int SpawnedGroupCount => BotGroups.Count(g => g.HaveAllBotsSpawned);
         public int RemainingGroupsToSpawnCount => BotGroups.Count(g => !g.HaveAllBotsSpawned);
         public bool HasRemainingSpawns => !HasGeneratedBots || BotGroups.Any(g => !g.HaveAllBotsSpawned);
+        public bool HasCompletedInitialPool =>
+            HasGeneratedBots
+            && (MaxGeneratedBots == 0
+                || (initialBotGroupCount > 0 && BotGroups.Take(initialBotGroupCount).All(g => g.HaveAllBotsSpawned)));
         public IReadOnlyCollection<Models.BotSpawnInfo> GetBotGroups() => BotGroups.ToArray();
-        public int MaxBotsToGenerate => Math.Min(MaxAliveBots, MaxGeneratedBots - GeneratedBotCount);
-        public int GeneratorProgress => 100 * GeneratedBotCount / MaxGeneratedBots;
+        public int MaxBotsToGenerate => isGeneratingContinuousGroup
+            ? Math.Max(0, BotsAllowedToSpawnForGeneratorType())
+            : Math.Min(MaxAliveBots, Math.Max(0, MaxGeneratedBots - GeneratedBotCount));
+        public int GeneratorProgress => MaxGeneratedBots <= 0 ? 100 : 100 * GeneratedBotCount / MaxGeneratedBots;
 
         public BotGenerator(string _botTypeName)
         {
@@ -109,12 +118,92 @@ namespace QuestingBots.Components.Spawning
                 return;
             }
 
+            if (CanSpawnBots() && ShouldGenerateContinuousTopUp())
+            {
+                StartContinuousTopUpGeneration();
+                return;
+            }
+
             if (!CanSpawnBots() || !AllowedToSpawnBots())
             {
                 return;
             }
 
             StartCoroutine(spawnBotGroups(BotGroups.ToArray()));
+        }
+
+        protected virtual bool IsContinuousTopUpEnabled() => false;
+        protected virtual float GetContinuousTopUpIntervalSeconds() => 45f;
+        protected virtual float GetContinuousTopUpStartAfterSeconds() => 180f;
+        protected virtual float GetContinuousTopUpMinRaidTimeRemaining() => 180f;
+
+        private bool ShouldGenerateContinuousTopUp()
+        {
+            if (!IsContinuousTopUpEnabled() || !HasGeneratedBots || isGeneratingContinuousGroup || IsSpawningBots)
+            {
+                return false;
+            }
+
+            if (!HasCompletedInitialPool)
+            {
+                return false;
+            }
+
+            if (BotGroups.Any(g => !g.HaveAllBotsSpawned))
+            {
+                return false;
+            }
+
+            if (GetNumberOfBotsAllowedToSpawn() <= 0)
+            {
+                return false;
+            }
+
+            if (RaidHelpers.GetSecondsSinceSpawning() < GetContinuousTopUpStartAfterSeconds())
+            {
+                return false;
+            }
+
+            if (RaidHelpers.GetRemainingRaidTimeSeconds() < GetContinuousTopUpMinRaidTimeRemaining())
+            {
+                return false;
+            }
+
+            if (continuousTopUpTimer.ElapsedMilliseconds < GetContinuousTopUpIntervalSeconds() * 1000)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void StartContinuousTopUpGeneration()
+        {
+            isGeneratingContinuousGroup = true;
+            continuousTopUpTimer.Restart();
+            _ = GenerateContinuousTopUpGroupAsync();
+        }
+
+        private async Task GenerateContinuousTopUpGroupAsync()
+        {
+            try
+            {
+                Singleton<LoggingUtil>.Instance.LogInfo("Generating continuous " + BotTypeName + " top-up group...");
+                Models.BotSpawnInfo group = await GenerateBotGroupTask();
+                BotGroups.Add(group);
+                GeneratedBotCount += group.GeneratedBotCount;
+                MaxGeneratedBots = Math.Max(MaxGeneratedBots, GeneratedBotCount);
+                Singleton<LoggingUtil>.Instance.LogInfo("Generated continuous " + BotTypeName + " top-up group (" + group.GeneratedBotCount + " bots).");
+            }
+            catch (Exception e)
+            {
+                Singleton<LoggingUtil>.Instance.LogError("Failed to generate continuous " + BotTypeName + " top-up group: " + e.Message);
+                Singleton<LoggingUtil>.Instance.LogError(e.StackTrace);
+            }
+            finally
+            {
+                isGeneratingContinuousGroup = false;
+            }
         }
 
         public static void Clear()
@@ -467,6 +556,7 @@ namespace QuestingBots.Components.Spawning
                         Singleton<LoggingUtil>.Instance.LogErrorToServerConsole("Only " + GeneratedBotCount + " of " + MaxGeneratedBots + " " + BotTypeName + "s were generated due to an error.");
                     }
 
+                    initialBotGroupCount = BotGroups.Count;
                     HasGeneratedBots = true;
                 }
             };

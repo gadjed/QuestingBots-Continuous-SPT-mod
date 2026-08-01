@@ -6,6 +6,11 @@
 # SPT-specific files
 Dist/
 Icon/
+Build/
+Client/References/*.dll
+!Client/References/README.md
+*.zip
+
 
 # User-specific files
 *.rsuser

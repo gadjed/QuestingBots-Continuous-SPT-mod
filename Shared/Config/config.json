@@ -345,6 +345,23 @@
 			"global_scav_enemy_chance": 100,
 			"pmc_enemy_roles": ["pmcBEAR", "pmcUSEC", "assault", "marksman", "assaultGroup"]
 		},
+		"continuous_population": {
+			"enabled": true,
+			"pmc_topup_enabled": true,
+			"pmc_topup_interval_seconds": 45,
+			"pmc_topup_start_after_seconds": 180,
+			"scav_reinforcements": {
+				"enabled": true,
+				"start_after_seconds": 180,
+				"interval_seconds": 180,
+				"slots_min": 2,
+				"slots_max": 4,
+				"waves_per_interval": 2,
+				"difficulty": "normal",
+				"extend_bot_stop": true,
+				"skip_maps": [ "laboratory", "labyrinth", "hideout" ]
+			}
+		},
 		"pmcs": {
 			"enabled": true,
 			"min_raid_time_remaining": 180,
@@ -363,11 +380,10 @@
 				[ 1, 1 ]
 			],
 			"bots_per_group_distribution": [
-				[ 1, 40 ],
-				[ 2, 30 ],
-				[ 3, 22 ],
-				[ 4, 5 ],
-				[ 5, 3 ]
+				[ 1, 10 ],
+				[ 2, 40 ],
+				[ 3, 35 ],
+				[ 4, 15 ]
 			],
 			"bot_difficulty_as_online": [
 				[ 0, 25 ],

@@ -43,6 +43,9 @@ namespace QuestingBots.Configuration
         [DataMember(Name = "pmc_hostility_adjustments", IsRequired = true)]
         public PMCHostilityAdjustmentsConfig PMCHostilityAdjustments { get; set; } = new PMCHostilityAdjustmentsConfig();
 
+        [DataMember(Name = "continuous_population", IsRequired = true)]
+        public ContinuousPopulationConfig ContinuousPopulation { get; set; } = new ContinuousPopulationConfig();
+
         [DataMember(Name = "pmcs", IsRequired = true)]
         public BotSpawnTypeConfig PMCs { get; set; } = new BotSpawnTypeConfig();
 
