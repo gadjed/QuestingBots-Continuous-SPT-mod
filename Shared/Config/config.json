@@ -1,7 +1,7 @@
 {
 	"enabled": true,
 	"debug": {
-		"enabled": true,
+		"enabled": false,
 		"always_spawn_pmcs": false,
 		"always_spawn_pscavs": false,
 		"show_zone_outlines": false,
@@ -149,7 +149,7 @@
 				"min_time_between_follower_looting_checks": 30,
 				"min_time_between_looting_events": 80,
 				"max_time_to_start_looting": 2,
-				"max_loot_scan_time": 4,
+				"max_loot_scan_time": 15,
 				"max_distance_from_boss": 50
 			},
 			"max_follower_distance": {
@@ -347,9 +347,6 @@
 		},
 		"continuous_population": {
 			"enabled": true,
-			"pmc_topup_enabled": true,
-			"pmc_topup_interval_seconds": 45,
-			"pmc_topup_start_after_seconds": 180,
 			"scav_reinforcements": {
 				"enabled": true,
 				"start_after_seconds": 180,

@@ -57,7 +57,7 @@ try
 {
     If ($mutex.WaitOne($mutexTimeoutMs))
     {
-        [System.IO.File]::WriteAllText($modInfoAbsolutePath, $updatedContent, (New-Object System.Text.UTF8Encoding $false))
+        $updatedContent | Out-File -FilePath $modInfoAbsolutePath -errorAction stop
     }
     Else
     {

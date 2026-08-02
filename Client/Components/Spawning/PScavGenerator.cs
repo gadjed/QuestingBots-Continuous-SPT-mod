@@ -56,7 +56,7 @@ namespace QuestingBots.Components.Spawning
                 return true;
             }
 
-            // Wait for the initial PMC wave to finish; continuous PMC top-ups must not block PScavs forever.
+            // Wait for the initial PMC wave to finish before PScavs start joining.
             if (!pmcGenerator.HasCompletedInitialPool)
             {
                 return false;
@@ -74,12 +74,12 @@ namespace QuestingBots.Components.Spawning
         {
             int botsAllowedToSpawn = BotsAllowedToSpawnForGeneratorType();
 
-            // Share max_alive_bots with PMCs (alive + currently spawning only).
+            // Ensure all PMC's have spawned first
             Singleton<GameWorld>.Instance.TryGetComponent(out Components.Spawning.PMCGenerator pmcGenerator);
             if (pmcGenerator != null)
             {
                 botsAllowedToSpawn -= pmcGenerator.AliveBots().Count();
-                botsAllowedToSpawn -= pmcGenerator.RemainingBotsInFlight();
+                botsAllowedToSpawn -= pmcGenerator.RemainingBotsToSpawn();
             }
 
             return botsAllowedToSpawn;
