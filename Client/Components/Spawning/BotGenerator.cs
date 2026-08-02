@@ -468,6 +468,26 @@ namespace QuestingBots.Components.Spawning
         }
 
         /// <summary>
+        /// Bots from groups that have started spawning but are not fully registered yet.
+        /// Used when sharing max_alive_bots so future (not-yet-due) spawn schedules do not permanently reserve slots.
+        /// </summary>
+        public int RemainingBotsInFlight()
+        {
+            int remainingBots = 0;
+            foreach (Models.BotSpawnInfo botSpawnInfo in BotGroups)
+            {
+                if (!botSpawnInfo.HasSpawnStarted || botSpawnInfo.HaveAllBotsSpawned)
+                {
+                    continue;
+                }
+
+                remainingBots += botSpawnInfo.RemainingBotsToSpawn;
+            }
+
+            return remainingBots;
+        }
+
+        /// <summary>
         /// Debug helper: queue new bot groups until alive+pending reaches MaxAliveBots, then allow an immediate spawn attempt.
         /// </summary>
         public void ForceRefillAliveBots()

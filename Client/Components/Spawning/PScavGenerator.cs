@@ -74,12 +74,12 @@ namespace QuestingBots.Components.Spawning
         {
             int botsAllowedToSpawn = BotsAllowedToSpawnForGeneratorType();
 
-            // Ensure all PMC's have spawned first
+            // Share max_alive_bots with PMCs (alive + currently spawning only).
             Singleton<GameWorld>.Instance.TryGetComponent(out Components.Spawning.PMCGenerator pmcGenerator);
             if (pmcGenerator != null)
             {
                 botsAllowedToSpawn -= pmcGenerator.AliveBots().Count();
-                botsAllowedToSpawn -= pmcGenerator.RemainingBotsToSpawn();
+                botsAllowedToSpawn -= pmcGenerator.RemainingBotsInFlight();
             }
 
             return botsAllowedToSpawn;

@@ -34,12 +34,13 @@ namespace QuestingBots.Components.Spawning
             int botsAllowedToSpawn = BotsAllowedToSpawnForGeneratorType();
 
             // After the initial PMC wave, share max_alive_bots with PScavs so continuous top-ups do not starve them.
+            // Only count alive + in-flight PScavs — not the entire future PScav schedule (that blocked top-ups for the whole raid).
             if (HasCompletedInitialPool
                 && Singleton<GameWorld>.Instance.TryGetComponent(out PScavGenerator pScavGenerator)
                 && pScavGenerator != null)
             {
                 botsAllowedToSpawn -= pScavGenerator.AliveBots().Count();
-                botsAllowedToSpawn -= pScavGenerator.RemainingBotsToSpawn();
+                botsAllowedToSpawn -= pScavGenerator.RemainingBotsInFlight();
             }
 
             return botsAllowedToSpawn;

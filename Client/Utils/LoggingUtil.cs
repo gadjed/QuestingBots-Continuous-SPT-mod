@@ -8,7 +8,7 @@ namespace QuestingBots.Utils
 {
     internal class LoggingUtil
     {
-        public const string MOD_RELATIVE_PATH = "/BepInEx/plugins/QuestingBots";
+        public const string MOD_RELATIVE_PATH = "/BepInEx/plugins/" + ModInfo.MODNAME;
 
         private BepInEx.Logging.ManualLogSource _logger;
 
