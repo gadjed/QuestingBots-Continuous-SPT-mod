@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MOD_NAME="QuestingBotsContinuous"
-MOD_VERSION="0.14.0"
+MOD_VERSION="0.14.1"
 DIST="$ROOT/Dist"
 STAGE="$DIST/stage"
 ZIP_NAME="${MOD_NAME}-${MOD_VERSION}.zip"

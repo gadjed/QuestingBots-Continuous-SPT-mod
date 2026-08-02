@@ -1,9 +1,9 @@
-<Project>
+﻿<Project>
 	<PropertyGroup>
 		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
 		<AssemblyTitle>QuestingBotsContinuous</AssemblyTitle>
 		<Authors>gadjed</Authors>
-		<Version>0.14.0</Version>
+		<Version>0.14.1</Version>
 		<SPTVersion>~4.1.0</SPTVersion>
 		<SPTGUID>com.gadjed.questingbots.continuous</SPTGUID>
 		<GithubRepoPath>https://github.com/gadjed/QuestingBots-Continuous-SPT-mod</GithubRepoPath>
